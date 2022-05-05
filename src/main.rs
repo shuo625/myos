@@ -27,8 +27,3 @@ fn main() {
     println!("Hello World! numbers are {} and {}", 42, 1.0 / 3.0);
     panic!("Panic some message");
 }
-
-#[test_case]
-fn trivial_assertion() {
-    assert_eq!(1, 1);
-}
