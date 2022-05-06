@@ -3,7 +3,6 @@ use crate::println;
 use crate::exit;
 use crate::serial_println;
 
-
 pub fn panic_handler(info: &PanicInfo) -> ! {
     println!("{}", info);
     loop {}

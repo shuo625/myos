@@ -8,9 +8,16 @@ use core::panic::PanicInfo;
 use myos::println;
 use myos::panic_handler;
 
+#[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     panic_handler::panic_handler(info);
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    panic_handler::test_panic_handler(info);
 }
 
 #[no_mangle]
