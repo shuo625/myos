@@ -5,7 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 pub mod vga_buffer;
-pub mod panic;
+pub mod panic_handler;
 pub mod exit;
 pub mod serial;
 pub mod test_runner;

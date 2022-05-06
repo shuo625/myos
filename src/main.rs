@@ -4,7 +4,14 @@
 #![test_runner(myos::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use core::panic::PanicInfo;
 use myos::println;
+use myos::panic_handler;
+
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    panic_handler::panic_handler(info);
+}
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
