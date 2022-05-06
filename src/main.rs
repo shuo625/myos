@@ -1,23 +1,18 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(crate::test_runner::test_runner)]
+#![test_runner(myos::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-mod vga_buffer;
-mod panic;
-mod exit;
-mod serial;
-#[cfg(test)]
-mod test_runner;
+use myos::println;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    #[cfg(test)]
-    test_main();
-
     #[cfg(not(test))]
     main();
+
+    #[cfg(test)]
+    test_main();
 
     #[allow(unreachable_code)]
     loop {}
