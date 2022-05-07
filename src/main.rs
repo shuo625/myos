@@ -1,10 +1,12 @@
 #![no_std]
 #![no_main]
+#![feature(abi_x86_interrupt)]
 #![feature(custom_test_frameworks)]
 #![test_runner(myos::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+
 use myos::println;
 use myos::panic_handler;
 
@@ -34,5 +36,11 @@ pub extern "C" fn _start() -> ! {
 
 fn main() {
     println!("Hello World! numbers are {} and {}", 42, 1.0 / 3.0);
-    panic!("Panic some message");
+    
+    myos::init();
+
+    // invoke a breakpoint exception
+    x86_64::instructions::interrupts::int3();
+
+    println!("I did not crash!");
 }
