@@ -5,6 +5,7 @@
 #![test_runner(crate::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+pub mod gdt;
 pub mod interrupts;
 pub mod vga_buffer;
 pub mod panic_handler;
@@ -14,6 +15,7 @@ pub mod test_runner;
 
 pub fn init() {
     interrupts::init_idt();
+    gdt::init();
 }
 
 /// entry point for cargo test
