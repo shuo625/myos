@@ -28,11 +28,17 @@ pub extern "C" fn _start() -> ! {
 
     test_main();
 
-    loop {}
+    hlt_loop();
 }
 
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
     panic_handler::test_panic_handler(info);
+}
+
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
 }

@@ -4,7 +4,7 @@
 #![test_runner(myos::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use myos::println;
+use myos::{println, hlt_loop};
 use myos::panic_handler;
 
 #[panic_handler]
@@ -16,7 +16,7 @@ fn panic(info: &core::panic::PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     test_main();
 
-    loop {}
+    hlt_loop();
 }
 
 #[test_case]

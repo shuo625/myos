@@ -6,7 +6,7 @@ use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 use core::panic::PanicInfo;
 use myos::panic_handler;
-use myos::{serial_print, serial_println};
+use myos::{serial_print, serial_println, hlt_loop};
 use myos::exit;
 
 #[panic_handler]
@@ -57,5 +57,5 @@ extern "x86-interrupt" fn test_double_fault_handler(
     serial_println!("[OK]");
     exit::exit_qemu(exit::QemuExitCode::Success);
 
-    loop {}
+    hlt_loop();
 }

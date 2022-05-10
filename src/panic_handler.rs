@@ -1,12 +1,12 @@
 use core::panic::PanicInfo;
 
-use crate::println;
 use crate::exit;
-use crate::serial_println;
+use crate::{serial_println, println, hlt_loop};
 
 pub fn panic_handler(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    
+    hlt_loop();
 }
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
@@ -14,5 +14,5 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("Error: {}\n", info);
     exit::exit_qemu(exit::QemuExitCode::Failed);
 
-    loop {}
+    hlt_loop();
 }
