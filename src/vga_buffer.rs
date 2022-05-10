@@ -163,6 +163,8 @@ fn test_println_many() {
 
 #[test_case]
 fn test_println_output() {
+    use core::fmt::Write;
+
     let s = "Some test string that fits on a single line";
     
     x86_64::instructions::interrupts::without_interrupts(|| {
