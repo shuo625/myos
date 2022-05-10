@@ -173,7 +173,7 @@ fn test_println_output() {
         writeln!(writer, "\n{}", s).expect("writeln failed");
 
         for (i, c) in s.chars().enumerate() {
-            let screen_char = WRITER.lock().buffer.chars[BUFFER_HEIGHT - 2][i].read();
+            let screen_char = writer.buffer.chars[BUFFER_HEIGHT - 2][i].read();
             assert_eq!(char::from(screen_char.ascii_character), c);
         }
     });
