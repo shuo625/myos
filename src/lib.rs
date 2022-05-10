@@ -14,8 +14,10 @@ pub mod serial;
 pub mod test_runner;
 
 pub fn init() {
-    interrupts::init_idt();
     gdt::init();
+    interrupts::init_idt();
+    unsafe { interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 }
 
 /// entry point for cargo test

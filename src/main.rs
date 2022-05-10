@@ -39,8 +39,5 @@ fn main() {
     
     myos::init();
 
-    // invoke a breakpoint exception
-    x86_64::instructions::interrupts::int3();
-
     println!("I did not crash!");
 }
