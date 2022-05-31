@@ -7,8 +7,8 @@
 
 use core::panic::PanicInfo;
 
-use myos::{println, hlt_loop};
 use myos::panic_handler;
+use myos::{hlt_loop, println};
 
 #[cfg(not(test))]
 #[panic_handler]
@@ -35,8 +35,14 @@ pub extern "C" fn _start() -> ! {
 
 fn main() {
     println!("Hello World! numbers are {} and {}", 42, 1.0 / 3.0);
-    
+
     myos::init();
+
+    // test page fault
+    let ptr = 0xdeadbeef as *mut u32;
+    unsafe {
+        *ptr = 42;
+    }
 
     println!("I did not crash!");
 }

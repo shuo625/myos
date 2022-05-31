@@ -1,13 +1,14 @@
-use x86_64::structures::idt::InterruptDescriptorTable;
 use lazy_static::lazy_static;
+use x86_64::structures::idt::InterruptDescriptorTable;
 
 use crate::gdt;
 
-mod pic;
 mod breakpoint_exception;
 mod double_fault_exception;
-mod timer_interrupt;
 mod keyboard_interrupt;
+mod page_fault_exception;
+mod pic;
+mod timer_interrupt;
 
 pub use pic::PICS;
 
@@ -15,7 +16,7 @@ pub use pic::PICS;
 #[repr(u8)]
 pub enum InterruptIndex {
     Timer = pic::PIC_1_OFFSET,
-    Keyboard
+    Keyboard,
 }
 
 impl InterruptIndex {
@@ -32,15 +33,23 @@ lazy_static! {
     static ref IDT: InterruptDescriptorTable = {
         let mut idt = InterruptDescriptorTable::new();
 
-        idt.breakpoint.set_handler_fn(breakpoint_exception::breakpoint_handler);
-        
+        idt.breakpoint
+            .set_handler_fn(breakpoint_exception::breakpoint_handler);
+
         unsafe {
-            idt.double_fault.set_handler_fn(double_fault_exception::double_fault_handler).set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
+            idt.double_fault
+                .set_handler_fn(double_fault_exception::double_fault_handler)
+                .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
         }
 
-        idt[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_interrupt::timer_interrupt_handler);
+        idt[InterruptIndex::Timer.as_usize()]
+            .set_handler_fn(timer_interrupt::timer_interrupt_handler);
 
-        idt[InterruptIndex::Keyboard.as_usize()].set_handler_fn(keyboard_interrupt::keyboard_interrupt_handler);
+        idt[InterruptIndex::Keyboard.as_usize()]
+            .set_handler_fn(keyboard_interrupt::keyboard_interrupt_handler);
+
+        idt.page_fault
+            .set_handler_fn(page_fault_exception::page_fault_handler);
 
         idt
     };
