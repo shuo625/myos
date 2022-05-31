@@ -5,7 +5,7 @@ use crate::{serial_println, println, hlt_loop};
 
 pub fn panic_handler(info: &PanicInfo) -> ! {
     println!("{}", info);
-    
+
     hlt_loop();
 }
 
