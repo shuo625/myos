@@ -5,6 +5,8 @@
 #![test_runner(myos::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader::{entry_point, BootInfo};
+
 use core::panic::PanicInfo;
 
 use myos::panic_handler;
@@ -22,10 +24,11 @@ fn panic(info: &PanicInfo) -> ! {
     panic_handler::test_panic_handler(info);
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(main);
+
+fn main(boot_info: &'static BootInfo) -> ! {
     #[cfg(not(test))]
-    main();
+    kernel_main();
 
     #[cfg(test)]
     test_main();
@@ -33,16 +36,18 @@ pub extern "C" fn _start() -> ! {
     hlt_loop();
 }
 
-fn main() {
+fn kernel_main() {
     println!("Hello World! numbers are {} and {}", 42, 1.0 / 3.0);
 
     myos::init();
 
+    use x86_64::registers::control::Cr3;
     // test page fault
-    let ptr = 0xdeadbeef as *mut u32;
-    unsafe {
-        *ptr = 42;
-    }
+    let (page_4_level_table, _) = Cr3::read();
+    println!(
+        "Level 4 page table at {:?}",
+        page_4_level_table.start_address()
+    );
 
     println!("I did not crash!");
 }

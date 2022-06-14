@@ -5,13 +5,15 @@
 #![test_runner(crate::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader::{entry_point, BootInfo};
+
+pub mod exit;
 pub mod gdt;
 pub mod interrupts;
-pub mod vga_buffer;
 pub mod panic_handler;
-pub mod exit;
 pub mod serial;
 pub mod test_runner;
+pub mod vga_buffer;
 
 pub fn init() {
     gdt::init();
@@ -20,10 +22,13 @@ pub fn init() {
     x86_64::instructions::interrupts::enable();
 }
 
+#[cfg(test)]
+entry_point!(main);
+
 /// entry point for cargo test
 #[cfg(test)]
 #[no_mangle]
-pub extern "C" fn _start() -> ! {
+fn main(_boot_info: &'static BootInfo) -> ! {
     init();
 
     test_main();
