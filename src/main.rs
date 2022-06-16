@@ -9,8 +9,7 @@ use bootloader::{entry_point, BootInfo};
 
 use core::panic::PanicInfo;
 
-use myos::panic_handler;
-use myos::{hlt_loop, println};
+use myos::{hlt_loop, memory, panic_handler, println};
 
 #[cfg(not(test))]
 #[panic_handler]
@@ -26,9 +25,10 @@ fn panic(info: &PanicInfo) -> ! {
 
 entry_point!(main);
 
+#[allow(unused_variables)]
 fn main(boot_info: &'static BootInfo) -> ! {
     #[cfg(not(test))]
-    kernel_main();
+    kernel_main(boot_info);
 
     #[cfg(test)]
     test_main();
@@ -36,18 +36,11 @@ fn main(boot_info: &'static BootInfo) -> ! {
     hlt_loop();
 }
 
-fn kernel_main() {
+#[allow(dead_code)]
+fn kernel_main(boot_info: &'static BootInfo) {
     println!("Hello World! numbers are {} and {}", 42, 1.0 / 3.0);
 
     myos::init();
-
-    use x86_64::registers::control::Cr3;
-    // test page fault
-    let (page_4_level_table, _) = Cr3::read();
-    println!(
-        "Level 4 page table at {:?}",
-        page_4_level_table.start_address()
-    );
 
     println!("I did not crash!");
 }
