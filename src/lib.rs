@@ -5,11 +5,14 @@
 #![test_runner(crate::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+extern crate alloc;
+
 #[allow(unused_imports)]
 use bootloader::{entry_point, BootInfo};
 
 pub mod exit;
 pub mod gdt;
+pub mod heap;
 pub mod interrupts;
 pub mod memory;
 pub mod panic_handler;
