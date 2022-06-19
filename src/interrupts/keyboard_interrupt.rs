@@ -1,18 +1,20 @@
-use x86_64::instructions::port::Port;
-use x86_64::structures::idt::InterruptStackFrame;
+use lazy_static::lazy_static;
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 use spin;
-use lazy_static::lazy_static;
+use x86_64::{instructions::port::Port, structures::idt::InterruptStackFrame};
 
-use crate::print;
-use crate::interrupts::PICS;
 use crate::interrupts::InterruptIndex;
-
+use crate::interrupts::PICS;
+use crate::print;
 
 pub extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
     lazy_static! {
         static ref KEYBOARD: spin::Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
-            spin::Mutex::new(Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore));
+            spin::Mutex::new(Keyboard::new(
+                layouts::Us104Key,
+                ScancodeSet1,
+                HandleControl::Ignore
+            ));
     }
 
     let mut keyboard = KEYBOARD.lock();
@@ -24,12 +26,13 @@ pub extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: Interrupt
         if let Some(key) = keyboard.process_keyevent(key_event) {
             match key {
                 DecodedKey::Unicode(character) => print!("{}", character),
-                DecodedKey::RawKey(key) => print!("{:?}", key)
+                DecodedKey::RawKey(key) => print!("{:?}", key),
             }
         }
     }
 
     unsafe {
-        PICS.lock().notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
+        PICS.lock()
+            .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
     }
 }

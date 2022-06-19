@@ -1,7 +1,7 @@
 use core::panic::PanicInfo;
 
 use crate::exit;
-use crate::{serial_println, println, hlt_loop};
+use crate::{hlt_loop, println, serial_println};
 
 pub fn panic_handler(info: &PanicInfo) -> ! {
     println!("{}", info);

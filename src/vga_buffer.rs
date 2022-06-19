@@ -1,7 +1,8 @@
-use volatile::Volatile;
-use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
+use volatile::Volatile;
+
+use core::fmt;
 
 #[macro_export]
 macro_rules! print {
@@ -27,7 +28,7 @@ lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) } 
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) }
     });
 }
 
@@ -67,7 +68,7 @@ impl ColorCode {
 #[repr(C)]
 struct ScreenChar {
     ascii_character: u8,
-    color_code: ColorCode
+    color_code: ColorCode,
 }
 
 const BUFFER_HEIGHT: usize = 25;
@@ -75,13 +76,13 @@ const BUFFER_WIDTH: usize = 80;
 
 #[repr(transparent)]
 struct Buffer {
-    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT]
+    chars: [[Volatile<ScreenChar>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
 pub struct Writer {
     column_position: usize,
     color_code: ColorCode,
-    buffer: &'static mut Buffer
+    buffer: &'static mut Buffer,
 }
 
 impl Writer {
@@ -99,7 +100,7 @@ impl Writer {
 
                 self.buffer.chars[row][col].write(ScreenChar {
                     ascii_character: byte,
-                    color_code: color_code 
+                    color_code: color_code,
                 });
 
                 self.column_position += 1;
@@ -113,7 +114,7 @@ impl Writer {
                 // part of vga buffer supported byte
                 0x20..=0x7e | b'\n' => self.write_byte(*byte),
                 // not supported
-                _ => self.write_byte(0xfe)
+                _ => self.write_byte(0xfe),
             }
         }
     }
@@ -133,7 +134,7 @@ impl Writer {
     fn clear_row(&mut self, row: usize) {
         let blank = ScreenChar {
             ascii_character: b' ',
-            color_code: self.color_code
+            color_code: self.color_code,
         };
 
         for col in 0..BUFFER_WIDTH {
@@ -166,10 +167,10 @@ fn test_println_output() {
     use core::fmt::Write;
 
     let s = "Some test string that fits on a single line";
-    
+
     x86_64::instructions::interrupts::without_interrupts(|| {
         let mut writer = WRITER.lock();
-        
+
         writeln!(writer, "\n{}", s).expect("writeln failed");
 
         for (i, c) in s.chars().enumerate() {
