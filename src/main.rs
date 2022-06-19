@@ -9,7 +9,7 @@ extern crate alloc;
 
 use bootloader::{entry_point, BootInfo};
 
-use alloc::{boxed::Box, vec::Vec};
+use alloc::boxed::Box;
 use core::panic::PanicInfo;
 
 use myos::{hlt_loop, panic_handler, println};
@@ -47,11 +47,7 @@ fn kernel_main(boot_info: &'static BootInfo) {
 
     let heap_value = Box::new(233);
 
-    let mut vec = Vec::new();
-    for i in 0..100 {
-        vec.push(i);
-    }
-    println!("vec at {:p}", vec.as_slice());
+    println!("I am at heap {}", heap_value);
 
     println!("I did not crash!");
 }
