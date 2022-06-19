@@ -5,8 +5,18 @@ use x86_64::{
     VirtAddr,
 };
 
+use linked_list_allocator::LockedHeap;
+
+#[global_allocator]
+static ALLOCATOR: LockedHeap = LockedHeap::empty();
+
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024;
+
+#[alloc_error_handler]
+fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
+    panic!("allocation error {:?}", layout)
+}
 
 pub fn init_heap(
     mapper: &mut impl Mapper<Size4KiB>,
@@ -17,6 +27,7 @@ pub fn init_heap(
         let heap_end = heap_start + HEAP_SIZE - 1u64;
         let heap_start_page = Page::containing_address(heap_start);
         let heap_end_page = Page::containing_address(heap_end);
+
         Page::range_inclusive(heap_start_page, heap_end_page)
     };
 
@@ -29,6 +40,8 @@ pub fn init_heap(
             mapper.map_to(page, frame, flags, frame_allocator)?.flush();
         };
     }
+
+    unsafe { ALLOCATOR.lock().init(HEAP_START, HEAP_SIZE) }
 
     Ok(())
 }
