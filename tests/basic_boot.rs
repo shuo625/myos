@@ -4,19 +4,21 @@
 #![test_runner(myos::test_runner::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
-use myos::{println, hlt_loop};
-use myos::panic_handler;
+use bootloader::{entry_point, BootInfo};
+
+use myos::{hlt_loop, panic_handler, println};
 
 #[panic_handler]
 fn panic(info: &core::panic::PanicInfo) -> ! {
-    panic_handler::test_panic_handler(info);
+    panic_handler::test_panic_handler(info)
 }
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(main);
+
+fn main(_boot_info: &'static BootInfo) -> ! {
     test_main();
 
-    hlt_loop();
+    hlt_loop()
 }
 
 #[test_case]
