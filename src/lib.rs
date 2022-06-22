@@ -22,6 +22,7 @@ pub mod interrupts;
 pub mod memory;
 pub mod panic_handler;
 pub mod serial;
+pub mod task;
 pub mod test_runner;
 pub mod utils;
 pub mod vga_buffer;
