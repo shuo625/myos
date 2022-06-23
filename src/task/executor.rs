@@ -1,7 +1,7 @@
 use crossbeam_queue::ArrayQueue;
 
 use alloc::{collections::BTreeMap, sync::Arc};
-use core::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
+use core::task::{Context, Poll, Waker};
 
 use crate::task::{waker::TaskWaker, Task, TaskId};
 
