@@ -12,7 +12,10 @@ use bootloader::{entry_point, BootInfo};
 use alloc::boxed::Box;
 use core::panic::PanicInfo;
 
-use myos::{hlt_loop, panic_handler, println};
+use myos::{
+    hlt_loop, panic_handler, println,
+    task::{executor::SimpleExecutor, keyboard, Task},
+};
 
 #[cfg(not(test))]
 #[panic_handler]
@@ -49,5 +52,19 @@ fn kernel_main(boot_info: &'static BootInfo) {
 
     println!("I am at heap {}", heap_value);
 
+    let mut executor = SimpleExecutor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.run();
+
     println!("I did not crash!");
+}
+
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    println!("async number is {}", number);
 }
